@@ -1,0 +1,44 @@
+---
+- name: Install Jenkins with Ansible
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Java
+      apt:
+        # Debian 12 Doesn't have support to jdk 11 anymore, using 17 instead.
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Install Jenkins ASC Key
+      block:
+        - name: Download Jenkins ASC Key
+          ansible.builtin.get_url:
+            url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+            # Custom Path
+            dest: /etc/apt/keyrings/jenkins-keyring.asc
+
+        - name: Add Apt signing key on remote server to keyring
+          ansible.builtin.apt_key:
+            file: /etc/apt/keyrings/jenkins-keyring.asc
+            state: present
+
+        - name: Add Jenkins to the APT Repository
+          ansible.builtin.apt_repository:
+            repo: "deb https://pkg.jenkins.io/debian-stable  binary/"
+            state: present
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
