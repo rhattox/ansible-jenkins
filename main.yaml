@@ -1,5 +1,5 @@
 ---
-- name: Install Sonatype Nexus Repository Manager
+- name: Install Jenkins
   hosts: localhost
   become: true
 
@@ -7,7 +7,7 @@
     key_location: /usr/share/keyrings/jenkins-keyring.asc
 
   tasks:
-    - name: "Update ansible.builtin.apt package cache"
+    - name: Update package cache
       ansible.builtin.apt:
         update_cache: true
 
@@ -17,21 +17,20 @@
         name: openjdk-17-jdk
         state: present
 
-    - name: Install Jenkins ASC Key
+    - name: Install Jenkins Keys
       block:
         - name: Download Jenkins ASC Key
           ansible.builtin.get_url:
             url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-            # Custom Path
             dest: "{{ key_location }}"
             mode: "0440"
 
-        - name: Add ansible.builtin.apt signing key on remote server to keyring
+        - name: Add signing key on remote server to keyring
           ansible.builtin.apt_key:
             file: "{{ key_location }}"
             state: present
 
-        - name: Add Jenkins to the ansible.builtin.apt Repository
+        - name: Add Jenkins to the Repository
           ansible.builtin.apt_repository:
             repo: "deb [signed-by={{ key_location }}] https://pkg.jenkins.io/debian-stable  binary/"
             state: present
