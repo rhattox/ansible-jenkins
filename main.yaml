@@ -1,15 +1,18 @@
 ---
-- name: Install Jenkins with Ansible
+- name: Install Sonatype Nexus Repository Manager
   hosts: localhost
-  become: yes
+  become: true
+
+  vars:
+    key_location: /usr/share/keyrings/jenkins-keyring.asc
 
   tasks:
-    - name: Update APT package cache
-      apt:
-        update_cache: yes
+    - name: "Update ansible.builtin.apt package cache"
+      ansible.builtin.apt:
+        update_cache: true
 
     - name: Install Java
-      apt:
+      ansible.builtin.apt:
         # Debian 12 Doesn't have support to jdk 11 anymore, using 17 instead.
         name: openjdk-17-jdk
         state: present
@@ -20,25 +23,26 @@
           ansible.builtin.get_url:
             url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
             # Custom Path
-            dest: /etc/apt/keyrings/jenkins-keyring.asc
+            dest: "{{ key_location }}"
+            mode: "0440"
 
-        - name: Add Apt signing key on remote server to keyring
+        - name: Add ansible.builtin.apt signing key on remote server to keyring
           ansible.builtin.apt_key:
-            file: /etc/apt/keyrings/jenkins-keyring.asc
+            file: "{{ key_location }}"
             state: present
 
-        - name: Add Jenkins to the APT Repository
+        - name: Add Jenkins to the ansible.builtin.apt Repository
           ansible.builtin.apt_repository:
-            repo: "deb https://pkg.jenkins.io/debian-stable  binary/"
+            repo: "deb [signed-by={{ key_location }}] https://pkg.jenkins.io/debian-stable  binary/"
             state: present
 
     - name: Install Jenkins
-      apt:
+      ansible.builtin.apt:
         name: jenkins
         state: present
 
     - name: Start Jenkins service
-      service:
+      ansible.builtin.service:
         name: jenkins
         state: started
-        enabled: yes
+        enabled: true
