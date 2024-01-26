@@ -5,6 +5,7 @@
 
   vars:
     key_location: /usr/share/keyrings/jenkins-keyring.asc
+    tmp_key_location: /tmp/jenkins-keyring.asc
 
   tasks:
     - name: Update package cache
@@ -22,18 +23,32 @@
         - name: Download Jenkins ASC Key
           ansible.builtin.get_url:
             url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-            dest: "{{ key_location }}"
+            dest: "{{ tmp_key_location }}"
             mode: "0440"
 
-        - name: Add signing key on remote server to keyring
-          ansible.builtin.apt_key:
-            file: "{{ key_location }}"
-            state: present
+        - name: Install GPG Key
+          register: apt_key
+          changed_when: apt_key.rc != 0
+          ansible.builtin.shell: |
+            cat {{ tmp_key_location }} | gpg --batch --yes --dearmor --quiet -o {{ key_location }}
+          args:
+            executable: /bin/bash
 
-        - name: Add Jenkins to the Repository
+        - name: Update file permission
+          ansible.builtin.file:
+            path: "{{ key_location }}"
+            mode: "0444"
+
+        - name: Remove tmp file
+          ansible.builtin.file:
+            path: "{{ tmp_key_location }}"
+            state: absent
+
+        - name: Install APT repository
           ansible.builtin.apt_repository:
-            repo: "deb [signed-by={{ key_location }}] https://pkg.jenkins.io/debian-stable  binary/"
+            repo: "deb [signed-by={{ key_location }}] https://pkg.jenkins.io/debian-stable binary/"
             state: present
+            filename: jenkins.list
 
     - name: Install Jenkins
       ansible.builtin.apt:
