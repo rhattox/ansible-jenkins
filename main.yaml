@@ -33,7 +33,7 @@
 
     - name: Install Jenkins
       ansible.builtin.apt:
-        name: jenkins
+        name: jenkins=2.426.3
         state: present
 
     - name: Start Jenkins service
