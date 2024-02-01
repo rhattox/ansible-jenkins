@@ -36,8 +36,26 @@
         name: jenkins=2.426.3
         state: present
 
-    - name: Start Jenkins service
-      ansible.builtin.service:
-        name: jenkins
-        state: started
-        enabled: true
+    # - name: Start Jenkins service
+    #   ansible.builtin.service:
+    #     name: jenkins
+    #     state: started
+    #     enabled: true
+
+    - name: Create SystemD overwrite Config Folder
+      ansible.builtin.file:
+        state: directory
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+        mode: "0755"
+        path: "/etc/systemd/system/jenkins.service.d"
+
+    - name: Configure Prefix Reverse Proxy
+      ansible.builtin.copy:
+        content: |
+          [Service]
+          Environment="JENKINS_PREFIX=/jenkins"
+        dest: "/etc/systemd/system/jenkins.service.d/override.conf"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+        mode: "0755"
