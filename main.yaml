@@ -59,3 +59,7 @@
         owner: "{{ ansible_user_id }}"
         group: "{{ ansible_user_id }}"
         mode: "0755"
+
+    - name: Start Jenkins service
+      ansible.builtin.systemd:
+        daemon_reload: true
