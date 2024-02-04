@@ -1,4 +1,4 @@
-- name: Nexus Installation
+- name: Jenkins Installation
   hosts: localhost
   become: true
   gather_facts: true
@@ -8,5 +8,5 @@
     corretto_version: "17.0.10.7.1"
 
   roles:
-  - java
-  - nexus
+    - java
+    - jenkins
