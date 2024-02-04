@@ -1,65 +1,12 @@
----
-- name: Install Jenkins
+- name: Jenkins Installation
   hosts: localhost
   become: true
+  gather_facts: true
 
   vars:
-    key_location: /usr/share/keyrings/jenkins-keyring.asc
+    corretto_home_path: "/usr/lib/jvm/corretto"
+    corretto_version: "17.0.10.7.1"
 
-  tasks:
-    - name: Update package cache
-      ansible.builtin.apt:
-        update_cache: true
-
-    - name: Install Java
-      ansible.builtin.apt:
-        # Debian 12 Doesn't have support to jdk 11 anymore, using 17 instead.
-        name: openjdk-17-jdk
-        state: present
-
-    - name: Install Jenkins Keys
-      block:
-        - name: Download Jenkins ASC Key
-          ansible.builtin.get_url:
-            url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-            dest: "{{ key_location }}"
-            mode: "0440"
-
-        - name: Install APT repository
-          ansible.builtin.apt_repository:
-            repo: "deb [signed-by={{ key_location }}] https://pkg.jenkins.io/debian-stable binary/"
-            state: present
-            filename: jenkins.list
-
-    - name: Install Jenkins
-      ansible.builtin.apt:
-        name: jenkins=2.426.3
-        state: present
-
-    # - name: Start Jenkins service
-    #   ansible.builtin.service:
-    #     name: jenkins
-    #     state: started
-    #     enabled: true
-
-    - name: Create SystemD overwrite Config Folder
-      ansible.builtin.file:
-        state: directory
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
-        mode: "0755"
-        path: "/etc/systemd/system/jenkins.service.d"
-
-    - name: Configure Prefix Reverse Proxy
-      ansible.builtin.copy:
-        content: |
-          [Service]
-          Environment="JENKINS_PREFIX=/jenkins"
-        dest: "/etc/systemd/system/jenkins.service.d/override.conf"
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
-        mode: "0755"
-
-    - name: Start Jenkins service
-      ansible.builtin.systemd:
-        daemon_reload: true
+  roles:
+    - java
+    - jenkins
