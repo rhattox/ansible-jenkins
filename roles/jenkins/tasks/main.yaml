@@ -26,14 +26,21 @@
   ansible.builtin.template:
     src: roles/jenkins/templates/override.conf.j2
     dest: "/etc/systemd/system/jenkins.service.d/override.conf"
-    owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group }}"
-    mode: "0755"
+    owner: "root"
+    group: "root"
+    mode: "0777"
 
 - name: Install Jenkins
   ansible.builtin.apt:
     name: "jenkins={{ jenkins_version }}"
     state: present
+
+- name: Configure Prefix Reverse Proxy
+  ansible.builtin.file:
+    path: "/etc/systemd/system/jenkins.service.d/override.conf"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: "0755"
 
 - name: Start Jenkins service
   ansible.builtin.systemd:
