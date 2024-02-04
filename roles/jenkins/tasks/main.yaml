@@ -14,11 +14,6 @@
         state: present
         filename: jenkins.list
 
-- name: Install Jenkins
-  ansible.builtin.apt:
-    name: "jenkins={{ jenkins_version }}"
-    state: present
-
 - name: Create SystemD overwrite Config Folder
   ansible.builtin.file:
     state: directory
@@ -34,6 +29,11 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: "0755"
+
+- name: Install Jenkins
+  ansible.builtin.apt:
+    name: "jenkins={{ jenkins_version }}"
+    state: present
 
 - name: Start Jenkins service
   ansible.builtin.systemd:
