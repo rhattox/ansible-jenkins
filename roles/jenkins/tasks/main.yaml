@@ -1,0 +1,40 @@
+- name: Install Jenkins Keys
+  block:
+    - name: Download Jenkins ASC Key
+      ansible.builtin.get_url:
+        url: "{{ jenkins_key }}"
+        dest: "{{ jenkins_key_location }}"
+        mode: "0755"
+        group: root
+        owner: root
+
+    - name: Install APT repository
+      ansible.builtin.apt_repository:
+        repo: "{{ jenkins_repo }}"
+        state: present
+        filename: jenkins.list
+
+- name: Install Jenkins
+  ansible.builtin.apt:
+    name: "jenkins={{ jenkins_version }}"
+    state: present
+
+- name: Create SystemD overwrite Config Folder
+  ansible.builtin.file:
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0755"
+    path: "/etc/systemd/system/jenkins.service.d"
+
+- name: Configure Prefix Reverse Proxy
+  ansible.builtin.template:
+    src: roles/jenkins/templates/override.conf.j2
+    dest: "/etc/systemd/system/jenkins.service.d/override.conf"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: "0755"
+
+- name: Start Jenkins service
+  ansible.builtin.systemd:
+    daemon_reload: true
