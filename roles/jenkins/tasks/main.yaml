@@ -42,6 +42,14 @@
     group: "{{ jenkins_group }}"
     mode: "0755"
 
+- name: Jenkins Post Install
+  block:
+    - name: Add the user to the docker group
+      ansible.builtin.user:
+        name: "jenkins"
+        groups: docker
+        append: true
+
 - name: Start Jenkins service
   ansible.builtin.systemd:
     daemon_reload: true
