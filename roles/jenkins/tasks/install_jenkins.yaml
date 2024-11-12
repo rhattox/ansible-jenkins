@@ -5,8 +5,8 @@
         url: "{{ jenkins_key }}"
         dest: "{{ jenkins_key_location }}"
         mode: "0640"
-        group: root
-        owner: root
+        group: "root"
+        owner: "root"
 
     - name: Install APT repository
       ansible.builtin.apt_repository:
@@ -14,39 +14,32 @@
         state: present
         filename: jenkins.list
 
-- name: Create SystemD overwrite Config Folder
-  ansible.builtin.file:
-    state: directory
-    owner: "root"
-    group: "root"
-    mode: "0640"
-    path: "/etc/systemd/system/jenkins.service.d"
-
-- name: Configure Prefix Reverse Proxy
-  ansible.builtin.template:
-    src: roles/jenkins/templates/override.conf.j2
-    dest: "/etc/systemd/system/jenkins.service.d/override.conf"
-    owner: "root"
-    group: "root"
-    mode: "0640"
-
 - name: Install Jenkins
   ansible.builtin.apt:
     name: "jenkins={{ jenkins_version }}"
     state: present
 
+- name: Create SystemD overwrite Config Folder
+  ansible.builtin.file:
+    state: directory
+    owner: "{{ app_name }}"
+    group: "{{ app_name }}"
+    mode: "0640"
+    path: "/etc/systemd/system/jenkins.service.d"
+
+
 - name: Configure Prefix Reverse Proxy
   ansible.builtin.file:
     path: "/etc/systemd/system/jenkins.service.d/override.conf"
-    owner: "{{ jenkins_user }}"
-    group: "{{ jenkins_group }}"
+    owner: "{{ app_name }}"
+    group: "{{ app_name }}"
     mode: "0640"
 
 - name: Jenkins Post Install
   block:
     - name: Add the user to the docker group
       ansible.builtin.user:
-        name: "jenkins"
+        name: "{{ app_name }}"
         groups: docker
         append: true
 
@@ -56,6 +49,6 @@
 
     - name: Start Service
       ansible.builtin.service:
-        name: jenkins
+        name: "{{ app_name }}"
         state: started
         enabled: true
