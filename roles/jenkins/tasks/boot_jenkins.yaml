@@ -1,0 +1,50 @@
+- name: Wait for Jenkins to be ready
+  ansible.builtin.wait_for:
+    port: 8080
+    timeout: 60
+
+- name: Retrieve initial admin password
+  ansible.builtin.slurp:
+    src: /opt/jenkins/secrets/initialAdminPassword
+  register: admin_password_file
+
+- name: Decode initial admin password
+  ansible.builtin.set_fact:
+    admin_password: "{{ admin_password_file.content | b64decode }}"
+
+- name: Debug login response
+  ansible.builtin.debug:
+    var: "{{ admin_password_file.content | b64decode }}"
+
+- name: Get Jenkins crumb for CSRF protection
+  ansible.builtin.uri:
+    url: "http://localhost:8080/jenkins/crumbIssuer/api/json"
+    method: GET
+    user: "admin"
+    password: "{{ admin_password }}"
+    force_basic_auth: true
+    return_content: true
+  register: crumb_response
+
+- name: Set crumb values
+  ansible.builtin.set_fact:
+    crumb: "{{ crumb_response.json.crumb }}"
+    crumb_field: "{{ crumb_response.json.crumbRequestField }}"
+
+- name: Post username and password with crumb (e.g., accessing Jenkins endpoint)
+  ansible.builtin.uri:
+    url: "http://localhost:8080/jenkins/login"
+    method: POST
+    body_format: json
+    body:
+      j_username: "admin"
+      j_password: "{{ admin_password }}"
+    headers:
+      "{{ crumb_field }}": "{{ crumb }}"
+    status_code: 200
+    return_content: true
+  register: login_response
+
+- name: Debug login response
+  ansible.builtin.debug:
+    var: login_response.content
