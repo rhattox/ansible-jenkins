@@ -4,7 +4,7 @@
       ansible.builtin.get_url:
         url: "{{ jenkins_key }}"
         dest: "{{ jenkins_key_location }}"
-        mode: "0755"
+        mode: "0640"
         group: root
         owner: root
 
@@ -19,7 +19,7 @@
     state: directory
     owner: "root"
     group: "root"
-    mode: "0755"
+    mode: "0640"
     path: "/etc/systemd/system/jenkins.service.d"
 
 - name: Configure Prefix Reverse Proxy
@@ -28,7 +28,7 @@
     dest: "/etc/systemd/system/jenkins.service.d/override.conf"
     owner: "root"
     group: "root"
-    mode: "0777"
+    mode: "0640"
 
 - name: Install Jenkins
   ansible.builtin.apt:
@@ -40,7 +40,7 @@
     path: "/etc/systemd/system/jenkins.service.d/override.conf"
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
-    mode: "0755"
+    mode: "0640"
 
 - name: Jenkins Post Install
   block:
@@ -50,6 +50,12 @@
         groups: docker
         append: true
 
-- name: Start Jenkins service
-  ansible.builtin.systemd:
-    daemon_reload: true
+    - name: Enable Service
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start Service
+      ansible.builtin.service:
+        name: jenkins
+        state: started
+        enabled: true
