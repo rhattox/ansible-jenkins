@@ -4,7 +4,7 @@
     state: directory
     owner: "{{ app_name }}"
     group: "{{ app_name }}"
-    mode: "0640"
+    mode: "0750"
 
 - name: Download and Extract
   block:
@@ -12,7 +12,7 @@
       ansible.builtin.get_url:
         url: "{{ corretto_archive_url }}"
         dest: "{{ corretto_tmp_file }}"
-        mode: "0640"
+        mode: "0750"
 
     - name: Create temporary directory
       ansible.builtin.file:
@@ -20,7 +20,7 @@
         state: directory
         owner: "{{ ansible_env.SUDO_USER }}"
         group: "{{ ansible_env.SUDO_USER }}"
-        mode: "0640"
+        mode: "0750"
 
     - name: Extract Corretto archive to temporary path
       ansible.builtin.unarchive:
@@ -35,7 +35,7 @@
         src: "{{ corretto_tmp_path }}/amazon-corretto-{{ corretto_version }}-linux-x64/"
         dest: "{{ corretto_home_path }}/{{ corretto_version }}"
         remote_src: true
-        mode: "0640"
+        mode: "0750"
         group: "{{ app_name }}"
         owner: "{{ app_name }}"
 

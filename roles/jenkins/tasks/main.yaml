@@ -3,3 +3,6 @@
 
 - name: Install Java as Dependency
   ansible.builtin.include_tasks: install_java.yaml
+
+- name: Install Jenkins
+  ansible.builtin.include_tasks: install_jenkins.yaml
