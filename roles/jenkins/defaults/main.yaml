@@ -1,5 +1,10 @@
-app_name: jenkins
-app_home: /opt/jenkins
+app_name: "jenkins"
+app_home: "/opt/jenkins"
+corretto_home_path: "{{ app_home }}/java/lib/jvm/corretto"
+corretto_version: "17.0.10.7.1"
+corretto_tmp_path: "/tmp/amazon-corretto"
+corretto_tmp_file: "/tmp/amazon-corretto.tar.gz"
+corretto_archive_url: "https://corretto.aws/downloads/resources/{{ corretto_version }}/amazon-corretto-{{ corretto_version }}-linux-x64.tar.gz"
 
 # THIS DEBIAN LOCATION WORKS FOR UBUNTU AS WELL
 jenkins_key: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key

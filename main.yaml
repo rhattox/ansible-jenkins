@@ -6,6 +6,5 @@
     corretto_home_path: "/opt/jenkins/java/lib/jvm/corretto"
     corretto_version: "17.0.10.7.1"
   roles:
-    - java
     - jenkins
     # - jenkins-plugins

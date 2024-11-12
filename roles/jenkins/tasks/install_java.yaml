@@ -2,8 +2,8 @@
   ansible.builtin.file:
     path: "{{ corretto_home_path }}"
     state: directory
-    owner: root
-    group: root
+    owner: "{{ app_name }}"
+    group: "{{ app_name }}"
     mode: "0640"
 
 - name: Download and Extract
@@ -36,8 +36,8 @@
         dest: "{{ corretto_home_path }}/{{ corretto_version }}"
         remote_src: true
         mode: "0640"
-        group: root
-        owner: root
+        group: "{{ app_name }}"
+        owner: "{{ app_name }}"
 
     - name: Creates Symlink
       ansible.builtin.file:
