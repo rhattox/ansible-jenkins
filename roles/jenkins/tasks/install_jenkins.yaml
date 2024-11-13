@@ -28,27 +28,12 @@
     path: "/etc/systemd/system/jenkins.service.d"
 
 
-- name: Configure Prefix Reverse Proxy
-  ansible.builtin.file:
-    path: "/etc/systemd/system/jenkins.service.d/override.conf"
-    owner: "{{ app_name }}"
+- name: Generate SystemD Config
+  ansible.builtin.template:
+    src: "roles/{{ app_name }}/templates/override.conf.j2"
+    dest: "/etc/systemd/system/jenkins.service.d/override.conf"
     group: "{{ app_name }}"
-    mode: "0640"
+    owner: "{{ app_name }}"
+    mode: "0755"
 
-- name: Jenkins Post Install
-  block:
-    - name: Add the user to the docker group
-      ansible.builtin.user:
-        name: "{{ app_name }}"
-        groups: docker
-        append: true
 
-    - name: Enable Service
-      ansible.builtin.systemd:
-        daemon_reload: true
-
-    - name: Start Service
-      ansible.builtin.service:
-        name: "{{ app_name }}"
-        state: started
-        enabled: true

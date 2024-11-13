@@ -1,33 +1,43 @@
-- name: Wait for Jenkins to be ready
-  ansible.builtin.wait_for:
-    port: 8080
-    timeout: 60
+- name: Configure Jenkins with JCasC
+   copy:
+     src: "{{ jenkins_casc_file }}"
+     dest: "/var/jenkins_home/casc_configs/jenkins.yaml"
+
+- name: Jenkins Post Install
+  block:
+    - name: Add the user to the docker group
+      ansible.builtin.user:
+        name: "{{ app_name }}"
+        groups: docker
+        append: true
+
+    - name: Enable Service
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start Service
+      ansible.builtin.service:
+        name: "{{ app_name }}"
+        state: started
+        enabled: true
 
 - name: Retrieve initial admin password
   ansible.builtin.slurp:
-    src: /opt/jenkins/secrets/initialAdminPassword
+    src: "{{ app_home }}/secrets/initialAdminPassword"
   register: initial_admin_password_file
 
 - name: Decode initial admin password
   ansible.builtin.set_fact:
-    admin_password_file: "{{ initial_admin_password_file.content | b64decode }}"
+    admin_password_file: "{{ initial_admin_password_file.content | b64decode | regex_replace('\\n', '') }}"
 
-- debug:
-    var: admin_password_file.content
-
-- name: Debug login response
-  ansible.builtin.debug:
-    var: "{{ initial_admin_password_file.content | b64decode }}"
+- name: Show decoded admin password
+  debug:
+    var: admin_password_file
 
 - name: Install each Jenkins plugin
   community.general.jenkins_plugin:
     name: "{{ item }}"
     url_username: "admin"
-    url_password: "{{ initial_admin_password_file }}"
+    url_password: "{{ admin_password_file }}"
     url: "{{ jenkins_url }}"
   loop: "{{ plugins }}"
-  register: plugin_installation_result
-
-- name: Show plugin installation result
-  debug:
-    var: plugin_installation_result

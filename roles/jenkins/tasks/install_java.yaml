@@ -2,9 +2,9 @@
   ansible.builtin.file:
     path: "{{ corretto_home_path }}"
     state: directory
-    owner: "{{ app_name }}"
-    group: "{{ app_name }}"
-    mode: "0750"
+    owner: "{{ ansible_env.SUDO_USER }}"
+    group: "{{ ansible_env.SUDO_USER }}"
+    mode: "0777"
 
 - name: Download and Extract
   block:

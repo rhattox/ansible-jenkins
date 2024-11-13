@@ -1,4 +1,6 @@
 [Service]
-Environment="JENKINS_HOME={{ app_home }}"
+Environment="JENKINS_URL=http://{{ ansible_all_ipv4_addresses[0] }}"
 Environment="JENKINS_PREFIX=/{{ app_name }}"
 Environment="JAVA_HOME={{ corretto_home_path }}/{{ corretto_version }}"
+Environment="JAVA_OPTS=-Djenkins.install.runSetupWizard=false -Djava.awt.headless=true"
+Environment="JENKINS_CASC={{ app_home }}/casc_config/jenkins.yaml"

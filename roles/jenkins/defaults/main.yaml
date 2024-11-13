@@ -1,7 +1,7 @@
 app_name: "jenkins"
-app_home: "/opt/{{ app_name }}"
+app_home: "/var/lib/{{ app_name }}"
 
-corretto_home_path: "{{ app_home }}/java/lib/jvm/corretto"
+corretto_home_path: "/opt/java/lib/jvm/corretto"
 corretto_version: "17.0.10.7.1"
 corretto_tmp_path: "/tmp/amazon-corretto"
 corretto_tmp_file: "/tmp/amazon-corretto.tar.gz"
@@ -12,7 +12,7 @@ jenkins_key_location: "/usr/share/keyrings/jenkins-keyring.asc"
 jenkins_repo: "deb [signed-by={{ jenkins_key_location }}] https://pkg.jenkins.io/debian-stable binary/"
 jenkins_version: "2.479.1"
 
-jenkins_url: "http://localhost:8080/{{ app_name }}"
+jenkins_url: "http://127.0.0.1:8080/{{ app_name }}"
 plugins:
     - "git"
     - "docker-plugin"
