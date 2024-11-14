@@ -1,30 +1,6 @@
 jenkins:
   systemMessage: "Welcome to Jenkins configured as code!"
-  mode: EXCLUSIVE # Only builds jobs with assigned labels
-  scmCheckoutRetryCount: 2
-  securityRealm:
-    local:
-      allowsSignup: false
-      users:
-        - id: "{{ jenkins_user }}"
-          password: "{{ jenkins_password }}"
-          fullName: "Administrator"
-  clouds:
-    - docker:
-        dockerApi:
-          dockerHost: "tcp://0.0.0.0:2375"
-          credentialsId: ""
-          readTimeout: 60
-          connectTimeout: 60
-        templates:
-          - labelString: "docker-agent"
-            name: "docker-agent"
-            image: "jenkins/inbound-agent:latest"
-            privileged: true
-            ttyEnabled: true
-            command: "/bin/sh -c"
-            args: "cat"
-            remoteFs: "/home/jenkins"
-            instanceCapStr: "5"
-
+authorizationStrategy:
+  loggedInUsersCanDoAnything:
+    allowAnonymousRead: true
 
