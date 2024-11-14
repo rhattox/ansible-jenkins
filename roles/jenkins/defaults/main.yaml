@@ -17,6 +17,26 @@ jenkins_password: admin123
 jenkins_url: "http://127.0.0.1:8080/{{ app_name }}"
 
 plugins:
+    # dependencies
+    - "branch-api"
+    - "workflow-job"
+    - "matrix-project"
+    - "handy-uri-templates-2-api"
+    - "workflow-basic-steps"
+    - "pipeline-model-definition"
+    - "okhttp-api"
+    - "checks-api"
+    - "echarts-api"
+    - "kubernetes-credentials"
+    - "kubernetes-client-api"
+    - "metrics"
+    - "javadoc"
+    - "jsch"
+    - "pipeline-groovy-lib"
+    - "commons-compress-api"
+    - "pipeline-groovy-lib"
+    - "cloudbees-folder"
+    # Plugins
     - "configuration-as-code"
     - "git"
     - "docker-plugin"
