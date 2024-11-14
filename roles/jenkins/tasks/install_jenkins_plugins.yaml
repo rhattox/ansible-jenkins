@@ -1,28 +1,17 @@
-- name: Configure Jenkins with JCasC
-  ansible.builtin.template:
-    src: "roles/{{ app_name }}/templates/jenkins.yaml"
-    dest: "{{ app_home }}/jenkins.yaml"
-    group: "{{ app_name }}"
-    owner: "{{ app_name }}"
-    mode: "0640"
+- name: Start Service
+  ansible.builtin.service:
+    name: "{{ app_name }}"
+    state: started
+    enabled: true 
 
-- name: Jenkins Post Install
-  block:
-    - name: Add the user to the docker group
-      ansible.builtin.user:
-        name: "{{ app_name }}"
-        groups: docker
-        append: true
-
-    - name: Enable Service
-      ansible.builtin.systemd:
-        daemon_reload: true
-
-    - name: Start Service
-      ansible.builtin.service:
-        name: "{{ app_name }}"
-        state: started
-        enabled: true
+# - name: Configure Jenkins with JCasC
+#   ansible.builtin.template:
+#     src: "roles/{{ app_name }}/templates/jenkins.yaml"
+#     dest: "{{ app_home }}/jenkins.yaml"
+#     group: "{{ app_name }}"
+#     owner: "{{ app_name }}"
+#     mode: "0640"
+#
 #
 # - name: Retrieve initial admin password
 #   ansible.builtin.slurp:

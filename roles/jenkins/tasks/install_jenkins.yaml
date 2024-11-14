@@ -35,3 +35,31 @@
     group: "{{ app_name }}"
     owner: "{{ app_name }}"
     mode: "0755"
+
+- name: Jenkins Post Install
+  block:
+    - name: Add the user to the docker group
+      ansible.builtin.user:
+        name: "{{ app_name }}"
+        groups: docker
+        append: true
+
+    - name: Enable Service
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start Service
+      ansible.builtin.service:
+        name: "{{ app_name }}"
+        state: started
+        enabled: true
+
+    - name: Wait for 30 seconds
+      ansible.builtin.pause:
+        seconds: 30
+      when: true
+
+    - name: Stop Service
+      ansible.builtin.service:
+        name: "{{ app_name }}"
+        state: stopped
