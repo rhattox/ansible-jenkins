@@ -35,5 +35,3 @@
     group: "{{ app_name }}"
     owner: "{{ app_name }}"
     mode: "0755"
-
-
