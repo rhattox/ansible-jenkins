@@ -1,0 +1,11 @@
+jenkins:
+  systemMessage: "Welcome to Jenkins configured as code!"
+  mode: EXCLUSIVE # Only builds jobs with assigned labels
+  scmCheckoutRetryCount: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "{{ jenkins_user }}"
+          password: "{{ jenkins_password }}"
+          fullName: "Administrator"
