@@ -1,0 +1,30 @@
+- name: Ensure pip is installed
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+
+- name: Install python-jenkins using pip
+  ansible.builtin.apt:
+    name: python3-jenkins
+    state: present
+
+- name: Retrieve initial admin password
+  ansible.builtin.slurp:
+    src: "{{ app_home }}/secrets/initialAdminPassword"
+  register: initial_admin_password_file
+
+- name: Decode initial admin password
+  ansible.builtin.set_fact:
+    admin_password_file: "{{ initial_admin_password_file.content | b64decode | regex_replace('\\n', '') }}"
+
+- name: Show decoded admin password
+  ansible.builtin.debug:
+    var: admin_password_file
+
+- name: Create a jenkins job using the token
+  community.general.jenkins_job:
+    config: "{{ lookup('template', 'templates/bitbucket.xml.j2') }}"
+    user: admin
+    name: test
+    password: "{{ admin_password_file }}"
+    url: "{{ jenkins_url }}"
