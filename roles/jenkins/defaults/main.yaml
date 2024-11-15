@@ -1,6 +1,6 @@
 app_name: "jenkins"
 app_home: "/var/lib/{{ app_name }}"
-
+app_port: 8080
 corretto_home_path: "/opt/java/lib/jvm/corretto"
 corretto_version: "17.0.10.7.1"
 corretto_tmp_path: "/tmp/amazon-corretto"
