@@ -54,9 +54,9 @@
         state: started
         enabled: true
 
-    - name: Wait for 30 seconds
+    - name: Wait for 60 seconds
       ansible.builtin.pause:
-        seconds: 30
+        seconds: 60
       when: true
 
     - name: Stop Service

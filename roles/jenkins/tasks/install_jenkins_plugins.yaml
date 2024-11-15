@@ -2,34 +2,45 @@
   ansible.builtin.service:
     name: "{{ app_name }}"
     state: started
-    enabled: true 
+    enabled: true
 
-# - name: Configure Jenkins with JCasC
-#   ansible.builtin.template:
-#     src: "roles/{{ app_name }}/templates/jenkins.yaml"
-#     dest: "{{ app_home }}/jenkins.yaml"
-#     group: "{{ app_name }}"
-#     owner: "{{ app_name }}"
-#     mode: "0640"
-#
-#
-# - name: Retrieve initial admin password
-#   ansible.builtin.slurp:
-#     src: "{{ app_home }}/secrets/initialAdminPassword"
-#   register: initial_admin_password_file
-#
-# - name: Decode initial admin password
-#   ansible.builtin.set_fact:
-#     admin_password_file: "{{ initial_admin_password_file.content | b64decode | regex_replace('\\n', '') }}"
-#
-# - name: Show decoded admin password
-#   ansible.builtin.debug:
-#     var: admin_password_file
-#
+- name: Retrieve initial admin password
+  ansible.builtin.slurp:
+    src: "{{ app_home }}/secrets/initialAdminPassword"
+  register: initial_admin_password_file
+
+- name: Decode initial admin password
+  ansible.builtin.set_fact:
+    admin_password_file: "{{ initial_admin_password_file.content | b64decode | regex_replace('\\n', '') }}"
+
+- name: Show decoded admin password
+  ansible.builtin.debug:
+    var: admin_password_file
+
 - name: Install each Jenkins plugin
   community.general.jenkins_plugin:
     name: "{{ item }}"
-    # url_username: "admin"
-    # url_password: "{{ admin_password_file }}"
+    url_username: "admin"
+    url_password: "{{ admin_password_file }}"
     url: "{{ jenkins_url }}"
   loop: "{{ plugins }}"
+
+- name: Wait for 30 seconds
+  ansible.builtin.pause:
+    seconds: 30
+  when: true
+
+- name: Stop Service
+  ansible.builtin.service:
+    name: "{{ app_name }}"
+    state: stopped
+
+- name: Wait for 30 seconds
+  ansible.builtin.pause:
+    seconds: 30
+  when: true
+
+- name: Start Service
+  ansible.builtin.service:
+    name: "{{ app_name }}"
+    state: started

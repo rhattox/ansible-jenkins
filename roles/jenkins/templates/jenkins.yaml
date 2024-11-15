@@ -1,6 +1,0 @@
-jenkins:
-  systemMessage: "Welcome to Jenkins configured as code!"
-authorizationStrategy:
-  loggedInUsersCanDoAnything:
-    allowAnonymousRead: true
-
