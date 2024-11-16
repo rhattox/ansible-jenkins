@@ -1,17 +1,17 @@
-# - name: Pre Install
-#   ansible.builtin.include_tasks: pre_install.yaml
+- name: Pre Install
+  ansible.builtin.include_tasks: pre_install.yaml
 
-# - name: Core Install
-#   ansible.builtin.include_tasks: core_install.yaml
+- name: Core Install
+  ansible.builtin.include_tasks: core_install.yaml
 
-# - name: Post Install
-#   ansible.builtin.include_tasks: post_install.yaml
+- name: Post Install
+  ansible.builtin.include_tasks: post_install.yaml
 
-# - name: Install Jenkins Plugins
-#   ansible.builtin.include_tasks: install_jenkins_plugins.yaml
+- name: Install Jenkins Plugins
+  ansible.builtin.include_tasks: install_jenkins_plugins.yaml
 
-# - name: Install NGINX Reverse Proxy
-#   ansible.builtin.include_tasks: install_nginx.yaml
+- name: Install NGINX Reverse Proxy
+  ansible.builtin.include_tasks: install_nginx.yaml
 
 - name: Add Jenkins to Docker Group
   ansible.builtin.include_tasks: docker_group.yaml
