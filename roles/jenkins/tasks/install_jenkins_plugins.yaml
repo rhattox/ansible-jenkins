@@ -1,46 +1,38 @@
-- name: Start Service
-  ansible.builtin.service:
-    name: "{{ app_name }}"
-    state: started
-    enabled: true
+- name: Wait File
+  block:
+    - name: Wait for file to appear if it doesn't exist
+      ansible.builtin.wait_for:
+        path: "{{ app_secret_path }}"
+        state: present
+        timeout: 180
+    - name: Wait for file to exist
+      ansible.builtin.stat:
+        path: "{{ app_secret_path }}"
+      register: file_stat
 
-- name: Retrieve initial admin password
-  ansible.builtin.slurp:
-    src: "{{ app_home }}/secrets/initialAdminPassword"
-  register: initial_admin_password_file
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "{{ file_stat.stat.exists }}"
 
-- name: Decode initial admin password
-  ansible.builtin.set_fact:
-    admin_password_file: "{{ initial_admin_password_file.content | b64decode | regex_replace('\\n', '') }}"
+- name: Install Jenkins Plugins
+  block:
+    - name: Retrieve initial admin password
+      ansible.builtin.slurp:
+        src: "{{ app_secret_path }}"
+      register: initial_admin_password_file
 
-- name: Show decoded admin password
-  ansible.builtin.debug:
-    var: admin_password_file
+    - name: Decode initial admin password
+      ansible.builtin.set_fact:
+        admin_password_file: "{{ initial_admin_password_file.content | b64decode | regex_replace('\\n', '') }}"
 
-- name: Install each Jenkins plugin
-  community.general.jenkins_plugin:
-    name: "{{ item }}"
-    url_username: "admin"
-    url_password: "{{ admin_password_file }}"
-    url: "{{ jenkins_url }}"
-  loop: "{{ plugins }}"
+    - name: Show decoded admin password
+      ansible.builtin.debug:
+        var: admin_password_file
 
-- name: Wait for 30 seconds
-  ansible.builtin.pause:
-    seconds: 30
-  when: true
-
-- name: Stop Service
-  ansible.builtin.service:
-    name: "{{ app_name }}"
-    state: stopped
-
-- name: Wait for 30 seconds
-  ansible.builtin.pause:
-    seconds: 30
-  when: true
-
-- name: Start Service
-  ansible.builtin.service:
-    name: "{{ app_name }}"
-    state: started
+    - name: Install each Jenkins plugin
+      community.general.jenkins_plugin:
+        name: "{{ item }}"
+        url_username: "{{ user }}"
+        url_password: "{{ admin_password_file }}"
+        url: "{{ app_url }}"
+      loop: "{{ plugins }}"

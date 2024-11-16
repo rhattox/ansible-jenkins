@@ -1,0 +1,11 @@
+- name: Service Configuration
+  block:
+    - name: Enable Service
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start Service
+      ansible.builtin.service:
+        name: "{{ app_name }}"
+        state: started
+        enabled: true

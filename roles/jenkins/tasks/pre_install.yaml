@@ -1,0 +1,16 @@
+- name: Install Jenkins Keys
+  block:
+    - name: Download Jenkins ASC Key
+      ansible.builtin.get_url:
+        url: "{{ apt_key }}"
+        dest: "{{ apt_key_location }}"
+        mode: "0550"
+        group: "root"
+        owner: "root"
+
+    - name: Install APT repository
+      ansible.builtin.apt_repository:
+        repo: "{{ apt_repo }}"
+        state: present
+        mode: "0550"
+        filename: "{{ app_name }}"

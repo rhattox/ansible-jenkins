@@ -1,0 +1,11 @@
+- name: Check if docker group exists
+  ansible.builtin.command: getent group docker
+  changed_when: false
+  register: docker_group_exists
+
+- name: Add the user to the docker group
+  ansible.builtin.user:
+    name: "{{ app_name }}"
+    groups: docker
+    append: true
+  when: docker_group_exists.rc == 0

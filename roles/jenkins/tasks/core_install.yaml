@@ -1,0 +1,21 @@
+- name: Install Jenkins
+  ansible.builtin.apt:
+    # name: "{{ app_name }}={{ app_version }}"
+    name: "{{ app_name }}"
+    state: present
+
+- name: Create SystemD overwrite Config Folder
+  ansible.builtin.file:
+    state: directory
+    owner: "{{ app_name }}"
+    group: "{{ app_name }}"
+    mode: "0550"
+    path: "{{ systemd_path }}"
+
+- name: Generate SystemD Config
+  ansible.builtin.template:
+    src: "roles/{{ app_name }}/templates/override.conf.j2"
+    dest: "{{ systemd_path }}/override.conf"
+    group: "{{ app_name }}"
+    owner: "{{ app_name }}"
+    mode: "0550"
