@@ -5,7 +5,7 @@
 
 - name: Start Service
   ansible.builtin.service:
-    name: "{{ app_name }}"
+    name: "nginx"
     state: started
     enabled: true
 
@@ -15,9 +15,9 @@
     dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
     owner: "root"
     group: "root"
-    mode: "0755"
+    mode: "0550"
 
 - name: Start Service
   ansible.builtin.service:
-    name: "{{ app_name }}"
+    name: "nginx"
     state: restarted
