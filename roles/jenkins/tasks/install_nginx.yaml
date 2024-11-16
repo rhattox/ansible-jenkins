@@ -3,16 +3,10 @@
     name: "nginx"
     state: present
 
-- name: Start Service
-  ansible.builtin.service:
-    name: "nginx"
-    state: started
-    enabled: true
-
 - name: Configure Reverse Proxy
   ansible.builtin.template:
     src: "roles/{{ app_name }}/templates/{{ app_name }}.conf.j2"
-    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+    dest: "{{ nginx_cofig_path }}"
     owner: "root"
     group: "root"
     mode: "0550"
@@ -21,3 +15,4 @@
   ansible.builtin.service:
     name: "nginx"
     state: restarted
+    enabled: true

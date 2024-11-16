@@ -1,7 +1,9 @@
 # ansible-jenkins
-Ansible Module to install Jenkins on a Debian machine
 
+Make sure java is already installed. Take a look at `git@github:rhattox/ansible-java.git`
 
-## How to use it:
+# To run
 
-`ansible-playbook main.yaml`
+```
+ansible-playbook main.yaml
+```

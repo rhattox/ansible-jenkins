@@ -4,6 +4,12 @@
     name: "{{ app_name }}"
     state: present
 
+- name: Add user to the group
+  ansible.builtin.user:
+    name: "{{ ansible_env.SUDO_USER }}"
+    groups: "{{ app_name }}"
+    append: true
+
 - name: Create SystemD overwrite Config Folder
   ansible.builtin.file:
     state: directory

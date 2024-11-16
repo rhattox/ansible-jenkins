@@ -9,6 +9,8 @@ systemd_path: "/etc/systemd/system/{{ app_name }}.service.d"
 corretto_home_path: "/usr/lib/jvm/corretto/"
 corretto_version: "17.0.13.11.1/"
 
+nginx_cofig_path: "/etc/nginx/sites-available/{{ app_name }}.conf"
+
 apt_key: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"
 apt_key_location: "/usr/share/keyrings/jenkins-keyring.asc"
 apt_repo: "deb [signed-by={{ apt_key_location }}] https://pkg.jenkins.io/debian-stable binary/"
