@@ -4,7 +4,7 @@
       ansible.builtin.get_url:
         url: "{{ apt_key }}"
         dest: "{{ apt_key_location }}"
-        mode: "0550"
+        mode: "0644"
         group: "root"
         owner: "root"
 
@@ -12,5 +12,5 @@
       ansible.builtin.apt_repository:
         repo: "{{ apt_repo }}"
         state: present
-        mode: "0550"
+        mode: "0644"
         filename: "{{ app_name }}"
